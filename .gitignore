@@ -1,0 +1,4 @@
+/ecogreenpath-API/
+/node_modules/
+.env
+serviceaccountkey.json
