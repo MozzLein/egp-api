@@ -4,12 +4,12 @@ const Admin = require('../models/adminModel.js')
 const Quests = require('../models/questModel.js')
 const jwt = require('jsonwebtoken')
 const {generateUUID} = require('../helper/generateId.js')
-const storage = require('../../config/storage.js')
+const {uploadStorage} = require('../helper/uploadStorage.js')
+
 
 //user section
 exports.userRegister = async (req, res) => {
     try {
-
         //get data from user
         const {username, password, confirmPassword, email, firstName, lastName, phoneNumber, birth} = req.body
         
@@ -76,7 +76,8 @@ exports.userLogin = async (req, res) => {
         
         res.status(200).send({
             message: "Login successfully",
-            token: token
+            token: token,
+            userId : userInformation.id
         })
     } catch (error) {
         res.status(500).send({
@@ -101,6 +102,7 @@ exports.getUserProfile = async (req, res) => {
         //send user profile 
         res.status(200).send({
             message : "User profile",
+            id : userProfile.id,
             profile_picture : userProfile.profile_picture,
             name : userProfile.name,
             email : userProfile.email,
@@ -118,7 +120,8 @@ exports.getUserProfile = async (req, res) => {
 exports.editUserProfile = async (req, res) => {
     try {
         const userId = req.params.id
-        const {firstName, lastName, email, phoneNumber, birth, profile_picture} = req.body
+        const {firstName, lastName, email, phoneNumber, birth} = req.body
+        const {profile_picture} = req.files
         
         //check if user exist
         const userProfile = await Users.findOne({where: {id: userId}})
@@ -128,6 +131,7 @@ exports.editUserProfile = async (req, res) => {
             })
             return
         }
+
         if(userId !== userProfile.id){
             res.status(403).send({
                 forbidden : "You do not have permission to edit this user data"
@@ -135,26 +139,31 @@ exports.editUserProfile = async (req, res) => {
             return
         }
         
-        //edit user profile
-        const updateUserInfo = Object.assign({}, userProfile, {
-            firstName,
-            lastName, 
-            email,
-            phoneNumber,
-            birth,
-            profile_picture
+        //upload profile picture to storage
+        await uploadStorage(profile_picture, res, async (imageUrl) => {
+            //edit user profile
+            const updateUserInfo = Object.assign({}, userProfile, {
+                firstName,
+                lastName, 
+                email,
+                phoneNumber,
+                birth,
+                profile_picture : imageUrl
+            })
+            await Users.update(updateUserInfo, {where: {id: userId}})
+            const updatedUserProfile = await Users.findOne({where: {id: userId}})
+            //send user profile
+            res.status(200).send({
+                message: "User profile updated successfully",
+                profile_picture : updatedUserProfile.profile_picture,
+                name : updatedUserProfile.name,
+                email : updatedUserProfile.email,
+                phoneNumber : updatedUserProfile.phoneNumber,
+                birth : updatedUserProfile.birth,
+            })
         })
-        await Users.update(updateUserInfo, {where: {id: userId}})
-        const updatedUserProfile = await Users.findOne({where: {id: userId}})
-        //send user profile
-        res.status(200).send({
-            message: "User profile updated successfully",
-            profile_picture : updatedUserProfile.profile_picture,
-            name : updatedUserProfile.name,
-            email : updatedUserProfile.email,
-            phoneNumber : updatedUserProfile.phoneNumber,
-            birth : updatedUserProfile.birth,
-        })
+
+        
     } catch (error) {
         res.status(500).send({
             error : error.message
@@ -249,46 +258,33 @@ exports.clearQuest = async (req, res) => {
             return res.status(400).send({ message: 'No file uploaded' })
         }
 
-        // Create a new filename for the uploaded image
-        const filename = `${Date.now()}_${file.originalname}`
-        const bucketName = 'photo-egp'
+        // Uploading file to storage
+        await uploadStorage(file, res, async (imageUrl) => {
+            try {
+                // get quest point
+                const questPoint = await Quests.findOne({where: {id: questId}})
+                const point = questPoint.point
 
-        const bucket = storage.bucket(bucketName)
-        // Upload the image to the GCS bucket
-        const blob = bucket.file(filename)
-        const blobStream = blob.createWriteStream({
-            metadata: {
-                contentType: file.mimetype
+                // update user point
+                const userPoint = await Users.findOne({where: {id: id}})
+                const newPoint = userPoint.point + point
+
+                await Users.update({point: newPoint},{where: {id: id}})
+
+                res.status(200).send({
+                    message: 'Upload success',
+                    imageUrl
+                })
+
+            }catch(error) {
+                res.status(500).send({
+                    error: error.message
+                })
             }
         })
-
-        blobStream.on('error', (err) => {
-            console.error('Error uploading image:', err)
-            res.status(500).send('Error uploading image')
-        })
-
-        blobStream.on('finish', () => {
-            const imageUrl = `https://storage.googleapis.com/${bucketName}/${filename}`
-            res.status(200).send({
-                message: 'Upload success',
-                imageUrl
-            })
-        })
-
-        blobStream.end(file.buffer)
-
-        // get quest point
-        const questPoint = await Quests.findOne({where: {id: questId}})
-        const point = questPoint.point
-
-        // update user point
-        const userPoint = await Users.findOne({where: {id: id}})
-        const newPoint = userPoint.point + point
         
-        await Users.update({point: newPoint},{where: {id: id}})
-    
+
     } catch (error) {
-        console.error('Error in testUpload:', error)
         res.status(500).send({
             error: error.message
         })

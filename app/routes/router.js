@@ -5,43 +5,42 @@ const {villageRegister, villageList, villageEdit, villageDelete} = require('../c
 const {addActivity, activityList, editActivity, deleteActivity} = require('../controllers/activityController')
 const {addPackage, packageList, editPackage, deletePackage} = require('../controllers/packageController')
 const {addQuest, questList, deleteQuest} = require('../controllers/questController')
-const {verifyToken} = require("../middleware/authMiddleware")
 const upload = require('../../config/multer')
 
 //router get
-router.get('/profile/:id', verifyToken, getUserProfile)
-router.get('/homepage/village/activity', verifyToken, activityList)
-router.get('/homepage/package/:villageId', verifyToken, packageList)
-router.get('/homepage/quest/:villageId', verifyToken, questList)
+router.get('/profile/:id', getUserProfile)
+router.get('/homepage/:villageId/activity', activityList)
+router.get('/homepage/package/:villageId', packageList)
+router.get('/homepage/quest/:villageId', questList)
 
 //router post
 router.post('/register', userRegister)
 router.post('/login', userLogin)
 router.post('/quests/:questId/:id', upload.single('image'), clearQuest)
 //router put
-router.put('/profile/:id', verifyToken, editUserProfile)
+router.put('/profile/:id', upload.single('profile_picture'), editUserProfile)
 
 //router admin ====================================================================================
 
 //router get
-router.get('/admin/:adminId/village', verifyToken, villageList)
+router.get('/admin/:adminId/village', villageList)
 
 //router post
 router.post('/admin/register', adminRegister)
 router.post('/admin/login', adminLogin)
-router.post('/admin/village/:adminId/register', verifyToken, villageRegister)
-router.post('/admin/:adminId/village/:villageId/activity', verifyToken, addActivity)
-router.post('/admin/village/:villageId/package', verifyToken, addPackage)
-router.post('/admin/quest/:villageId', verifyToken, addQuest)
+router.post('/admin/village/:adminId/register', villageRegister)
+router.post('/admin/:adminId/village/:villageId/activity', addActivity)
+router.post('/admin/village/:villageId/package', addPackage)
+router.post('/admin/quest/:villageId', addQuest)
 
 //router put
-router.put('/admin/:adminId/village/:villageId', verifyToken, villageEdit)
-router.put('/admin/village/activity/:id', verifyToken, editActivity)
-router.put('/admin/village/package/:packageId', verifyToken, editPackage)
+router.put('/admin/:adminId/village/:villageId', villageEdit)
+router.put('/admin/village/activity/:id', editActivity)
+router.put('/admin/village/package/:packageId', editPackage)
 
 //router delete
-router.delete('/admin/village/:id', verifyToken, villageDelete)
-router.delete('/admin/village/activity/:id', verifyToken, deleteActivity)
-router.delete('/admin/village/package/:packageId', verifyToken, deletePackage)
-router.delete('/admin/quest/:questId', verifyToken, deleteQuest)
+router.delete('/admin/village/:id', villageDelete)
+router.delete('/admin/village/activity/:id', deleteActivity)
+router.delete('/admin/village/package/:packageId', deletePackage)
+router.delete('/admin/quest/:questId', deleteQuest)
 module.exports = router

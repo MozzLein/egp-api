@@ -5,7 +5,7 @@ const Village = require('../models/villageModel.js')
 exports.addPackage = async (req, res) => {
     try {
         const villageId = req.params.villageId
-        const { package_picture, name, description, activities } = req.body
+        const { package_picture, name, description, activities, price } = req.body
 
         //check if village exist
         const villageInformation = await Village.findOne({where: {id: villageId}})
@@ -15,15 +15,6 @@ exports.addPackage = async (req, res) => {
             })
             return
         }
-
-        //get activities price
-        const relatedActivities = await Activity.findAll({where : {id: activities}})
-        const activitiesPrice = relatedActivities.map(activity => activity.activityPrice)
-        const prices = activitiesPrice.map(activityPrice => {
-            const price  = parseInt(activityPrice)
-            return price
-        })
-        const price = prices.reduce((a, b) => a + b, 0)
 
         //Input data to DB
         await Package.create({
@@ -60,6 +51,7 @@ exports.packageList = async (req, res) => {
 
         const relatedVillage = await Village.findOne({where: {id: villageId}})
         const {villageName, villageLongitude, villageLatitude} = relatedVillage
+        
         //send data
         res.status(200).send({
             data: packages.map(packageData => ({
@@ -93,17 +85,7 @@ exports.editPackage = async (req, res) => {
 
         
         //update package
-        const { package_picture, name, description, activities } = req.body 
-
-        //get the activity price
-        const relatedActivities = await Activity.findAll({where : {id: activities}})
-        const activitiesPrice = relatedActivities.map(activity => activity.activityPrice)
-        const prices = activitiesPrice.map(activityPrice => {
-            const price  = parseInt(activityPrice)
-            return price
-        })
-        const price = prices.reduce((a, b) => a + b, 0)
-        console.log(price)
+        const { package_picture, name, description, activities, price } = req.body 
 
         const updatePackageInfo = Object.assign({}, packageInformation, {
             package_picture : package_picture || 'default.jpg',
