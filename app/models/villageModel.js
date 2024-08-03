@@ -25,13 +25,6 @@ const Village = sequelize.define("villages", {
             notEmpty: true
         }
     },
-    villageDesc: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-        }
-    },
     villageLatitude: {
         type: DataTypes.STRING,
         allowNull: false,

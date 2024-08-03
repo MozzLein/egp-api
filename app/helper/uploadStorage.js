@@ -15,7 +15,7 @@ exports.uploadStorage = (file, res, next) => {
     })
 
     blobStream.on('error', (err) => {
-        next(err)
+        next
     })
 
     blobStream.on('finish', () => {

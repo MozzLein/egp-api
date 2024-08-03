@@ -17,6 +17,7 @@ router.get('/homepage/quest/:villageId', questList)
 router.post('/register', userRegister)
 router.post('/login', userLogin)
 router.post('/quests/:questId/:id', upload.single('image'), clearQuest)
+
 //router put
 router.put('/profile/:id', upload.single('profile_picture'), editUserProfile)
 
@@ -28,15 +29,15 @@ router.get('/admin/:adminId/village', villageList)
 //router post
 router.post('/admin/register', adminRegister)
 router.post('/admin/login', adminLogin)
-router.post('/admin/village/:adminId/register', villageRegister)
+router.post('/admin/village/:adminId/register', upload.single('picture'), villageRegister)
 router.post('/admin/:adminId/village/:villageId/activity', addActivity)
-router.post('/admin/village/:villageId/package', addPackage)
+router.post('/admin/village/:villageId/package', upload.single('package_picture'), addPackage)
 router.post('/admin/quest/:villageId', addQuest)
 
 //router put
-router.put('/admin/:adminId/village/:villageId', villageEdit)
+router.put('/admin/:adminId/village/:villageId', upload.single('picture'), villageEdit)
 router.put('/admin/village/activity/:id', editActivity)
-router.put('/admin/village/package/:packageId', editPackage)
+router.put('/admin/village/package/:packageId', upload.single('package_picture'), editPackage)
 
 //router delete
 router.delete('/admin/village/:id', villageDelete)

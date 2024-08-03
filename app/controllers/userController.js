@@ -121,7 +121,12 @@ exports.editUserProfile = async (req, res) => {
     try {
         const userId = req.params.id
         const {firstName, lastName, email, phoneNumber, birth} = req.body
-        const {profile_picture} = req.files
+        const profile_picture = req.file
+
+        //check if file uploaded
+        if (!profile_picture) {
+            return res.status(400).send({ message: 'No file uploaded' })
+        }
         
         //check if user exist
         const userProfile = await Users.findOne({where: {id: userId}})

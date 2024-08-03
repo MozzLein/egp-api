@@ -1,32 +1,43 @@
 const Village = require('../models/villageModel.js')
 const Activity = require('../models/activityModel.js')
 const {generateUUID} = require('../helper/generateId.js')
+const {uploadStorage} = require('../helper/uploadStorage.js')
 
 exports.villageRegister = async (req, res) => {
     try {
-        const { villageName, villageDesc, villageLatitude, villageLongitude, province, regency, district, socialMedia, contact, picture } = req.body
+        const { villageName, villageLatitude, villageLongitude, province, regency, district, socialMedia, contact} = req.body
+        const picture = req.file
         const adminId = req.params.adminId
         const id = generateUUID()
 
-        // Input data to DB
-        await Village.create({
-            id,
-            adminRelation: adminId,
-            villageName,
-            villageDesc,
-            villageLatitude,
-            villageLongitude,
-            province,
-            regency,
-            district,
-            socialMedia: Array.isArray(socialMedia) ? socialMedia : [],
-            contact: Array.isArray(contact) ? contact : [],
-            picture: picture || 'default.jpg'
-        })
+        //check if file uploaded
+        if (!picture) {
+            return res.status(400).send({ message: 'No file uploaded' })
+        }
 
-        res.status(201).send({
-            message: "New village added successfully"
+        await uploadStorage (picture, res, async (imageUrl) => {
+
+            // Input data to DB
+            const newVillage = await Village.create({
+                id,
+                adminRelation: adminId,
+                villageName,
+                villageLatitude,
+                villageLongitude,
+                province,
+                regency,
+                district,
+                socialMedia: Array.isArray(socialMedia) ? socialMedia : [],
+                contact: Array.isArray(contact) ? contact : [],
+                picture: imageUrl || 'default.jpg'
+            })
+
+            res.status(201).send({
+                message: "New village added successfully",
+                newVillage
+            })
         })
+        
     } catch (error) {
         res.status(500).send({
             error: error.message
@@ -55,7 +66,6 @@ exports.villageList = async (req, res) => {
 
         const villageData = villages.map(village => ({
             villageName: village.villageName,
-            villageDesc: village.villageDesc,
             province: village.province,
             regency: village.regency,
             district: village.district,
@@ -102,27 +112,33 @@ exports.villageEdit = async (req, res) => {
             return
         }
         //update village information
-        const {villageName, villageDesc, villageLatitude, villageLongitude, province, regency, district, socialMedia, contact, picture} = req.body
-        const updateVillageInfo = Object.assign({}, villageInformation, {
-            villageName,
-            villageDesc,
-            villageLatitude,
-            villageLongitude,
-            province,
-            regency,
-            district,
-            socialMedia,
-            contact,
-            picture,
-        })
+        const {villageName, villageLatitude, villageLongitude, province, regency, district, socialMedia, contact} = req.body
+        const picture = req.file
 
-        await Village.update(updateVillageInfo, {where: {id: villageId}})
-        const updatedVillageInformation = await Village.findOne({where: {id: villageId}})
+        await uploadStorage(picture, res, async (imageUrl) => {
+            const updateVillageInfo = Object.assign({}, villageInformation, {
+                villageName,
+                villageLatitude,
+                villageLongitude,
+                province,
+                regency,
+                district,
+                socialMedia,
+                contact,
+                picture : imageUrl
+            })
 
-        res.status(200).send({
-            message: "Village updated successfully",
-            updatedVillageInformation
+            await Village.update(updateVillageInfo, {where: {id: villageId}})
+            const updatedVillageInformation = await Village.findOne({where: {id: villageId}})
+
+            res.status(200).send({
+                message: "Village updated successfully",
+                updatedVillageInformation
+            })
         })
+        
+
+        
     } catch (error) {
         res.status(500).send({
             error: error.message
