@@ -37,17 +37,6 @@ const Package = sequelize.define("packages", {
             key: 'id'
         }
     },
-    activities:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        get() {
-            const rawValue = this.getDataValue('activities')
-            return rawValue ? rawValue.split(';') : []
-        },
-        set(val) {
-            this.setDataValue('activities', Array.isArray(val) ? val.join(';') : val)
-        },
-    },
     price:{
         type: DataTypes.STRING,
         allowNull: false,

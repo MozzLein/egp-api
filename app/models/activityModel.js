@@ -30,11 +30,11 @@ const Activity = sequelize.define("activities", {
             notEmpty: true
         }
     },
-    activityCategory: {
+    activity_picture:{
         type: DataTypes.STRING,
         allowNull: false,
-        validate: {
-            notEmpty: true
+        validate:{
+            notEmpty : true
         }
     },
     activityPrice: {

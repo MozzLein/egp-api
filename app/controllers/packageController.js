@@ -5,7 +5,7 @@ const Village = require('../models/villageModel.js')
 exports.addPackage = async (req, res) => {
     try {
         const villageId = req.params.villageId
-        const { package_picture, name, description, activities, price } = req.body
+        const { package_picture, name, description, price } = req.body
 
         //check if village exist
         const villageInformation = await Village.findOne({where: {id: villageId}})
@@ -15,19 +15,20 @@ exports.addPackage = async (req, res) => {
             })
             return
         }
+        await uploadStorage (package_picture, res, async (imageUrl) => {
 
-        //Input data to DB
-        await Package.create({
-            package_picture : package_picture || 'default.jpg',
-            name,
-            description,
-            villageRelation : villageId,
-            activities,
-            price : 'Rp. ' + price
-        })
-        res.status(201).send({
-            message: "New package added successfully"
-
+            //Input data to DB
+            await Package.create({
+                package_picture : imageUrl || 'default.jpg',
+                name,
+                description,
+                villageRelation : villageId,
+                price : 'Rp. ' + price
+            })
+            res.status(201).send({
+                message: "New package added successfully"
+    
+            })
         })
     } catch (error) {
         res.status(500).send({
@@ -85,20 +86,22 @@ exports.editPackage = async (req, res) => {
             return
         }
 
-        
-        //update package
-        const { package_picture, name, description, activities, price } = req.body 
+        const { package_picture, name, description, price } = req.body 
 
-        const updatePackageInfo = Object.assign({}, packageInformation, {
-            package_picture : package_picture || 'default.jpg',
-            name,
-            description,
-            activities,
-            price : 'Rp. ' + price
-        })
-        await Package.update(updatePackageInfo, {where: {id: packageId}})
-        res.status(200).send({
-            message: "Package updated successfully"
+        await uploadStorage (package_picture, res, async (imageUrl) => {
+
+            //update package
+            const updatePackageInfo = Object.assign({}, packageInformation, {
+                package_picture : imageUrl || 'default.jpg',
+                name,
+                description,
+                price : 'Rp. ' + price
+            })
+            await Package.update(updatePackageInfo, {where: {id: packageId}})
+            res.status(200).send({
+                message: "Package updated successfully"
+            })
+
         })
     } catch (error) {
         res.status(500).send({

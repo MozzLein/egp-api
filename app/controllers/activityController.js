@@ -5,7 +5,7 @@ const {generateUUID} = require('../helper/generateId.js')
 exports.addActivity = async (req, res) => {
     try {
         const villageId = req.params.villageId
-        const { activityName, activityDesc, activityCategory, activityPrice } = req.body
+        const { activityName, activityDesc, activityPrice, activity_picture } = req.body
         const id = generateUUID()
 
         //check if village exist
@@ -17,19 +17,23 @@ exports.addActivity = async (req, res) => {
             return
         }
     
-        //Input data to DB
-        await Activity.create({
-            id,
-            villageRelation: villageId,
-            activityName,
-            activityDesc,
-            activityCategory,
-            activityPrice
+        await uploadStorage(activity_picture, res, async (imageUrl) => {
+
+            //Input data to DB
+            await Activity.create({
+                id,
+                villageRelation: villageId,
+                activityName,
+                activityDesc,
+                activityPrice,
+                activity_picture : imageUrl || 'default.jpg'
+            })
+        
+            res.status(201).send({
+                message: "New activity added successfully"
+            })
         })
-    
-        res.status(201).send({
-            message: "New activity added successfully"
-        })
+
     } catch (error) {
         res.status(500).send({
             error: error.message
@@ -51,6 +55,7 @@ exports.activityList = async (req, res) => {
         })
     }
 }
+
 exports.editActivity = async (req, res) => {
     try {
         const activityId = req.params.id
@@ -64,18 +69,24 @@ exports.editActivity = async (req, res) => {
             return
         }
         
-        //update activity
-        const { activityName, activityDesc, activityCategory, activityPrice } = req.body
-        const updateActivityInfo = Object.assign({}, activityInformation, {
-            activityName,
-            activityDesc,
-            activityCategory,
-            activityPrice
+        const { activityName, activityDesc, activityPrice, activity_picture } = req.body
+        
+        await uploadStorage(activity_picture, res, async (imageUrl) => {
+            
+            //update activity
+            const updateActivityInfo = Object.assign({}, activityInformation, {
+                activityName,
+                activityDesc,
+                activityPrice,
+                activity_picture : imageUrl || 'default.jpg'
+            })
+
+            await Activity.update(updateActivityInfo, {where: {id: activityId}})
+            res.status(200).send({
+                message: "Activity updated successfully"
+            })
         })
-        await Activity.update(updateActivityInfo, {where: {id: activityId}})
-        res.status(200).send({
-            message: "Activity updated successfully"
-        })
+        
     } catch (error) {
         res.status(500).send({
             error: error.message
