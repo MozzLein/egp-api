@@ -33,13 +33,9 @@ const Activity = sequelize.define("activities", {
     activityCategory: {
         type: DataTypes.STRING,
         allowNull: false,
-        get() {
-            const rawValue = this.getDataValue('activityCategory')
-            return rawValue ? rawValue.split(';') : []
-        },
-        set(val) {
-            this.setDataValue('activityCategory', Array.isArray(val) ? val.join(';') : val)
-        },
+        validate: {
+            notEmpty: true
+        }
     },
     activityPrice: {
         type: DataTypes.STRING,

@@ -23,7 +23,7 @@ exports.addActivity = async (req, res) => {
             villageRelation: villageId,
             activityName,
             activityDesc,
-            activityCategory: Array.isArray(activityCategory) ? activityCategory : [],
+            activityCategory,
             activityPrice
         })
     

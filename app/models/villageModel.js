@@ -62,24 +62,16 @@ const Village = sequelize.define("villages", {
     socialMedia: {
         type: DataTypes.STRING,
         allowNull: false,
-        get() {
-            const rawValue = this.getDataValue('socialMedia')
-            return rawValue ? rawValue.split(';') : []
-        },
-        set(val) {
-            this.setDataValue('socialMedia', Array.isArray(val) ? val.join(';') : val)
-        },
+        validate: {
+            notEmpty: true
+        }
     },
     contact: {
         type: DataTypes.STRING,
         allowNull: false,
-        get() {
-            const rawValue = this.getDataValue('contact')
-            return rawValue ? rawValue.split(';') : []
-        },
-        set(val) {
-            this.setDataValue('contact', Array.isArray(val) ? val.join(';') : val)
-        },
+        validate: {
+            notEmpty: true
+        }
     },
     picture: {
         type: DataTypes.STRING,

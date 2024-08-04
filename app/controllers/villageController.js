@@ -27,8 +27,8 @@ exports.villageRegister = async (req, res) => {
                 province,
                 regency,
                 district,
-                socialMedia: Array.isArray(socialMedia) ? socialMedia : [],
-                contact: Array.isArray(contact) ? contact : [],
+                socialMedia,
+                contact,
                 picture: imageUrl || 'default.jpg'
             })
 
