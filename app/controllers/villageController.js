@@ -34,6 +34,7 @@ exports.villageRegister = async (req, res) => {
 
             res.status(201).send({
                 message: "New village added successfully",
+                id: newVillage.id,
                 newVillage
             })
         })
