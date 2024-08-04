@@ -50,7 +50,7 @@ exports.packageList = async (req, res) => {
         }
 
         const relatedVillage = await Village.findOne({where: {id: villageId}})
-        const {villageName, villageLongitude, villageLatitude} = relatedVillage
+        const {villageName, villageLongitude, villageLatitude, socialMedia, contact} = relatedVillage
         
         //send data
         res.status(200).send({
@@ -62,6 +62,8 @@ exports.packageList = async (req, res) => {
                 packageLongitude: villageLongitude,
                 packageLatitude: villageLatitude,
                 villageRelation: villageName,
+                socialMedia,
+                contact
             }))
 })
     } catch (error) {

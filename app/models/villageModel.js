@@ -13,9 +13,8 @@ const Village = sequelize.define("villages", {
     adminRelation: {
         type: DataTypes.UUID,
         allowNull: false,
-        references: {
-            model: 'admins',
-            key: 'id'
+        validate: {
+            notEmpty: true
         }
     },
     villageName: {

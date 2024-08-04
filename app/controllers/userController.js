@@ -5,7 +5,7 @@ const Quests = require('../models/questModel.js')
 const jwt = require('jsonwebtoken')
 const {generateUUID} = require('../helper/generateId.js')
 const {uploadStorage} = require('../helper/uploadStorage.js')
-
+require('dotenv').config()
 
 //user section
 exports.userRegister = async (req, res) => {
