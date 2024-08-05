@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const {userRegister, userLogin, getUserProfile, editUserProfile, adminRegister, adminLogin, clearQuest} = require('../controllers/userController')
 const {villageRegister, villageList, villageAdminList, villageEdit, villageDelete} = require('../controllers/villageController')
-const {addActivity, activityList, editActivity, deleteActivity} = require('../controllers/activityController')
-const {addPackage, packageList, editPackage, deletePackage} = require('../controllers/packageController')
+const {addActivity, activityList, activityDetail, editActivity, deleteActivity} = require('../controllers/activityController')
+const {addPackage, packageList, packageDetail, packageAdminList, editPackage, deletePackage} = require('../controllers/packageController')
 const {addQuest, questList, deleteQuest} = require('../controllers/questController')
 const upload = require('../../config/multer')
 
@@ -11,7 +11,9 @@ const upload = require('../../config/multer')
 router.get('/profile/:id', getUserProfile)
 router.get('/homepage', villageList)
 router.get('/homepage/:villageId/activity', activityList)
+router.get('/homepage/activity/:activityId', activityDetail)
 router.get('/homepage/package/:villageId', packageList)
+router.get('/homepage/package/:packageId', packageDetail)
 router.get('/homepage/quest/:villageId', questList)
 
 //router post
@@ -26,6 +28,8 @@ router.put('/profile/:id', upload.single('profile_picture'), editUserProfile)
 
 //router get
 router.get('/admin/:adminId/village', villageAdminList)
+router.get('/admin/:adminId/', packageAdminList)
+router.get('admin/:adminId/:villageId/quest', questList)
 
 //router post
 router.post('/admin/register', adminRegister)

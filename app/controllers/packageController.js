@@ -1,6 +1,6 @@
 const Package = require('../models/packageModel.js')
-const Activity = require('../models/activityModel.js')
 const Village = require('../models/villageModel.js')
+const {uploadStorage} = require('../helper/uploadStorage.js')
 
 exports.addPackage = async (req, res) => {
     try {
@@ -74,6 +74,49 @@ exports.packageList = async (req, res) => {
     }
 }
 
+exports.packageAdminList = async (req, res) => {
+    try {
+        const {adminId} = req.params
+        //get all package
+        const villageRelation = await Village.findOne({ where: { adminRelation: adminId } });
+        if(!villageRelation){
+            res.status(404).send({
+                message: "Village not found"
+            })
+            return
+        }
+        const packageList = await Package.findAll({where: {villageRelation : villageRelation.id}})
+
+        res.status(200).send({
+            villageRelation : villageRelation.id,
+            packageList,
+        })
+    } catch (error) {
+        res.status(500).send({
+            
+        })
+    }
+}
+
+exports.packageDetail = async (req, res) => {
+    try {
+        const packageId = req.params.packageId
+        const packageDetail = await Package.findOne({where: {id: packageId}})
+        if(!packageDetail){
+            res.status(404).send({
+                message: "Package not found"
+            })
+            return
+        }
+        res.status(200).send({
+            packageDetail
+        })
+    } catch (error) {
+        res.send(500).send({
+            error: error.message
+        })
+    }
+}
 exports.editPackage = async (req, res) => {
     try {
         const packageId = req.params.packageId

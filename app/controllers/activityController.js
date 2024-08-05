@@ -1,7 +1,8 @@
 const Activity = require('../models/activityModel.js')
 const Village = require('../models/villageModel.js')
 const {generateUUID} = require('../helper/generateId.js')
-    
+const {uploadStorage} = require('../helper/uploadStorage.js')
+
 exports.addActivity = async (req, res) => {
     try {
         const villageId = req.params.villageId
@@ -48,6 +49,22 @@ exports.activityList = async (req, res) => {
         const activityList = await Activity.findAll({where: {id: villageId}})
         res.status(200).send({
             activityList
+        })
+    } catch (error) {
+        res.status(500).send({
+            error: error.message
+        })
+    }
+}
+
+exports.activityDetail = async (req, res) => {
+    try {
+        const activityId = req.params.activityId
+
+        const activityDetail = await Activity.findOne({where: {id: activityId}})
+
+        res.status(200).send({
+            activityDetail
         })
     } catch (error) {
         res.status(500).send({
