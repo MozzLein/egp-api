@@ -6,7 +6,8 @@ const {uploadStorage} = require('../helper/uploadStorage.js')
 exports.addActivity = async (req, res) => {
     try {
         const villageId = req.params.villageId
-        const { activityName, activityDesc, activityPrice, activity_picture } = req.body
+        const { activityName, activityDesc, activityPrice } = req.body
+        const activity_picture = req.file
         const id = generateUUID()
 
         //check if village exist
@@ -86,7 +87,8 @@ exports.editActivity = async (req, res) => {
             return
         }
         
-        const { activityName, activityDesc, activityPrice, activity_picture } = req.body
+        const { activityName, activityDesc, activityPrice } = req.body
+        const activity_picture = req.file
         
         await uploadStorage(activity_picture, res, async (imageUrl) => {
             

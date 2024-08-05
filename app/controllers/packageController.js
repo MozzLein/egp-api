@@ -5,7 +5,8 @@ const {uploadStorage} = require('../helper/uploadStorage.js')
 exports.addPackage = async (req, res) => {
     try {
         const villageId = req.params.villageId
-        const { package_picture, name, description, price } = req.body
+        const { name, description, price } = req.body
+        const package_picture = req.file
 
         //check if village exist
         const villageInformation = await Village.findOne({where: {id: villageId}})
@@ -129,7 +130,8 @@ exports.editPackage = async (req, res) => {
             return
         }
 
-        const { package_picture, name, description, price } = req.body 
+        const { name, description, price } = req.body 
+        const package_picture = req.file
 
         await uploadStorage (package_picture, res, async (imageUrl) => {
 
