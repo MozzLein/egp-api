@@ -12,6 +12,7 @@ exports.addActivity = async (req, res) => {
 
         //check if village exist
         const villageInformation = await Village.findOne({where: {id: villageId}})
+
         if(!villageInformation){
             res.status(404).send({
                 message: "Village not found"
@@ -45,9 +46,9 @@ exports.addActivity = async (req, res) => {
 
 exports.activityList = async (req, res) => {
     try {
-        const villageId = req.params.villageId
-        
-        const activityList = await Activity.findAll({where: {id: villageId}})
+        //get all activity
+        const activityList = await Activity.findAll()
+
         res.status(200).send({
             activityList
         })
@@ -62,10 +63,17 @@ exports.activityDetail = async (req, res) => {
     try {
         const activityId = req.params.activityId
 
+        //check if activity exist
         const activityDetail = await Activity.findOne({where: {id: activityId}})
+        const villageRelation = await Village.findOne({where: {id: activityDetail.villageRelation}})
+
+        const {villageName, villageLongitude, villageLatitude} = villageRelation
 
         res.status(200).send({
-            activityDetail
+            activityDetail,
+            villageName,
+            villageLongitude,
+            villageLatitude
         })
     } catch (error) {
         res.status(500).send({

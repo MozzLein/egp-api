@@ -29,8 +29,7 @@ exports.addQuest = async (req, res) => {
 
 exports.questList = async (req, res) => {
     try {
-        const villageId = req.params.villageId
-        const questList = await Quest.findAll({where: {villageRelation: villageId}})
+        const questList = await Quest.findAll()
         res.status(200).send({
             questList
         })

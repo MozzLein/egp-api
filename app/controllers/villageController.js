@@ -49,13 +49,15 @@ exports.villageRegister = async (req, res) => {
 exports.villageList = async (req, res) => {
     try {
         //get all village
-        const villages = await Village.findAll({
-            include: [{
-                model: Activity,
-                as : 'activities',
-                attributes : ['id', 'activityName', 'activityDesc', 'activityCategory']
-            }]
-        })
+        const villages = await Village.findAll(
+        //     {
+        //     include: [{
+        //         model: Activity,
+        //         as : 'activities',
+        //         attributes : ['id', 'activityName', 'activityDesc', 'activityCategory']
+        //     }]
+        // }
+    )
 
         //if there is no data
         if(villages.length < 1){
@@ -74,12 +76,12 @@ exports.villageList = async (req, res) => {
             socialMedia: village.socialMedia,
             contact: village.contact,
             picture: village.picture,
-            activities: village.activities.map(activity => ({
-                id: activity.id,
-                activityName: activity.activityName,
-                activityDesc: activity.activityDesc,
-                activityCategory: activity.activityCategory
-            }))
+            // activities: village.activities.map(activity => ({
+            //     id: activity.id,
+            //     activityName: activity.activityName,
+            //     activityDesc: activity.activityDesc,
+            //     activityCategory: activity.activityCategory
+            // }))
         }));
 
         res.status(200).send({

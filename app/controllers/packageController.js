@@ -40,9 +40,8 @@ exports.addPackage = async (req, res) => {
 
 exports.packageList = async (req, res) => {
     try {
-        const villageId = req.params.villageId
         //get all package
-        const packages = await Package.findAll({where: {villageRelation : villageId}})  
+        const packages = await Package.findAll()  
         //if there is no data
         if(packages.length < 1){
             res.status(404).send({
@@ -50,22 +49,15 @@ exports.packageList = async (req, res) => {
             })
             return
         }
-
-        const relatedVillage = await Village.findOne({where: {id: villageId}})
-        const {villageName, villageLongitude, villageLatitude, socialMedia, contact} = relatedVillage
         
         //send data
         res.status(200).send({
             data: packages.map(packageData => ({
+                id: packageData.id,
                 packageName: packageData.name,
                 packageDesc: packageData.description,
                 packagePicture: packageData.package_picture,
                 packagePrice: packageData.price,
-                packageLongitude: villageLongitude,
-                packageLatitude: villageLatitude,
-                villageRelation: villageName,
-                socialMedia,
-                contact
             }))
 })
     } catch (error) {
@@ -102,6 +94,8 @@ exports.packageAdminList = async (req, res) => {
 exports.packageDetail = async (req, res) => {
     try {
         const packageId = req.params.packageId
+
+        //check if package exist
         const packageDetail = await Package.findOne({where: {id: packageId}})
         if(!packageDetail){
             res.status(404).send({
@@ -109,8 +103,17 @@ exports.packageDetail = async (req, res) => {
             })
             return
         }
+
+        //get location data from vilalgeRelation
+        const villageRelation = await Village.findOne({where: {id: packageDetail.villageRelation}})
+
+        const {villageName, villageLongitude, villageLatitude} = villageRelation
+
         res.status(200).send({
-            packageDetail
+            packageDetail,
+            villageName,
+            villageLongitude,
+            villageLatitude
         })
     } catch (error) {
         res.send(500).send({
@@ -118,6 +121,7 @@ exports.packageDetail = async (req, res) => {
         })
     }
 }
+
 exports.editPackage = async (req, res) => {
     try {
         const packageId = req.params.packageId

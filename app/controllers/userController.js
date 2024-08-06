@@ -258,6 +258,7 @@ exports.clearQuest = async (req, res) => {
     try {
         const file = req.file
         const {questId, id} = req.params
+        const {desc} = req.body
 
         if (!file) {
             return res.status(400).send({ message: 'No file uploaded' })
@@ -278,7 +279,8 @@ exports.clearQuest = async (req, res) => {
 
                 res.status(200).send({
                     message: 'Upload success',
-                    imageUrl
+                    imageUrl,
+                    desc
                 })
 
             }catch(error) {
