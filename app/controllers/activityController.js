@@ -82,6 +82,7 @@ exports.activityDetail = async (req, res) => {
             activityDetail,
             villageName,
             villageLongitude,
+            villageLatitude
         })
     } catch (error) {
         res.status(500).send({
