@@ -46,6 +46,15 @@ exports.addActivity = async (req, res) => {
 
 exports.activityList = async (req, res) => {
     try {
+        const {villageId} = req.params
+        if(villageId){
+            //get all activity
+            const activityList = await Activity.findAll({where: {villageRelation: villageId}})
+            return res.status(200).send({
+                activityList
+            })
+        }
+
         //get all activity
         const activityList = await Activity.findAll()
 
@@ -73,7 +82,6 @@ exports.activityDetail = async (req, res) => {
             activityDetail,
             villageName,
             villageLongitude,
-            villageLatitude
         })
     } catch (error) {
         res.status(500).send({

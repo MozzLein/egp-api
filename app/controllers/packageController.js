@@ -40,6 +40,20 @@ exports.addPackage = async (req, res) => {
 
 exports.packageList = async (req, res) => {
     try {
+        const {villageId} = req.params
+        if(villageId){
+            //get all package
+            const packages = await Package.findAll({where: {villageRelation: villageId}})
+            return res.status(200).send({
+                data: packages.map(packageData => ({
+                    id: packageData.id,
+                    packageName: packageData.name,
+                    packageDesc: packageData.description,
+                    packagePicture: packageData.package_picture,
+                    packagePrice: packageData.price,
+                }))
+            })
+        }
         //get all package
         const packages = await Package.findAll()  
         //if there is no data

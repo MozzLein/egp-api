@@ -11,10 +11,12 @@ const upload = require('../../config/multer')
 router.get('/profile/:id', getUserProfile)
 router.get('/homepage', villageList)
 router.get('/homepage/activity', activityList)
+router.get('/homepage/:villageId/activity', activityList)
 router.get('/homepage/activity/:activityId', activityDetail)
+router.get('/homepage/package/:villageId', packageList)
 router.get('/homepage/package', packageList)
 router.get('/homepage/package/:packageId', packageDetail)
-router.get('/homepage/quest', questList)
+router.get('/homepage/quest/', questList)
 
 //router post
 router.post('/register', userRegister)
