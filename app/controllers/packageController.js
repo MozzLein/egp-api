@@ -5,7 +5,7 @@ const {uploadStorage} = require('../helper/uploadStorage.js')
 exports.addPackage = async (req, res) => {
     try {
         const villageId = req.params.villageId
-        const { name, description, price } = req.body
+        const { name, description, price, duration } = req.body
         const package_picture = req.file
 
         //check if village exist
@@ -24,7 +24,8 @@ exports.addPackage = async (req, res) => {
                 name,
                 description,
                 villageRelation : villageId,
-                price : 'Rp. ' + price
+                price : 'Rp. ' + price,
+                duration
             })
             res.status(201).send({
                 message: "New package added successfully"
@@ -150,7 +151,7 @@ exports.editPackage = async (req, res) => {
             return
         }
 
-        const { name, description, price } = req.body 
+        const { name, description, price, duration } = req.body 
         const package_picture = req.file
 
         await uploadStorage (package_picture, res, async (imageUrl) => {
@@ -160,7 +161,8 @@ exports.editPackage = async (req, res) => {
                 package_picture : imageUrl || 'default.jpg',
                 name,
                 description,
-                price : 'Rp. ' + price
+                price : 'Rp. ' + price,
+                duration
             })
             await Package.update(updatePackageInfo, {where: {id: packageId}})
             res.status(200).send({

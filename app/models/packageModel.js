@@ -43,6 +43,13 @@ const Package = sequelize.define("packages", {
         validate:{
             notEmpty : true
         }
+    },
+    duration:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate:{
+            notEmpty : true
+        }
     }
 })
 
