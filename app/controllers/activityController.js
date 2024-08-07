@@ -76,14 +76,15 @@ exports.activityDetail = async (req, res) => {
         const activityDetail = await Activity.findOne({where: {id: activityId}})
         const villageRelation = await Village.findOne({where: {id: activityDetail.villageRelation}})
 
-        const {picture, villageName, villageLongitude, villageLatitude} = villageRelation
+        const {picture, villageName, villageLongitude, villageLatitude, province} = villageRelation
 
         res.status(200).send({
             activityDetail,
             picture,
             villageName,
             villageLongitude,
-            villageLatitude
+            villageLatitude,
+            province
         })
     } catch (error) {
         res.status(500).send({
