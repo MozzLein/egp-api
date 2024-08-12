@@ -76,6 +76,8 @@ exports.villageList = async (req, res) => {
             socialMedia: village.socialMedia,
             contact: village.contact,
             picture: village.picture,
+            villageLatitude,
+            villageLongitude
             // activities: village.activities.map(activity => ({
             //     id: activity.id,
             //     activityName: activity.activityName,
