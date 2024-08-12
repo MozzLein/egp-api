@@ -73,6 +73,7 @@ exports.packageList = async (req, res) => {
                 packageDesc: packageData.description,
                 packagePicture: packageData.package_picture,
                 packagePrice: packageData.price,
+                duration: packageData.duration
             }))
 })
     } catch (error) {

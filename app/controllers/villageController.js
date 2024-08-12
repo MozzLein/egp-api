@@ -131,8 +131,7 @@ exports.villageAdminList = async (req, res) => {
             activities: village.activities.map(activity => ({
                 id: activity.id,
                 activityName: activity.activityName,
-                activityDesc: activity.activityDesc,
-                activityCategory: activity.activityCategory
+                activityDesc: activity.activityDesc
             }))
         }));
 
