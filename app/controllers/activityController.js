@@ -50,6 +50,7 @@ exports.activityList = async (req, res) => {
         if(villageId){
             //get all activity
             const activityList = await Activity.findAll({where: {villageRelation: villageId}})
+            const villageRelation = activityList.map(activityData => activityData.villageRelation)
             const {villageName} = await Village.findOne({where: {id: villageId}})
             return res.status(200).send({
                 activityList,
@@ -60,7 +61,7 @@ exports.activityList = async (req, res) => {
 
         //get all activity
         const activityList = await Activity.findAll()
-        const {villageRelation} = activityList
+        const villageRelation = activityList.map(activityData => activityData.villageRelation)
         const {villageName} = await Village.findOne({where: {id: villageRelation}})
 
         res.status(200).send({

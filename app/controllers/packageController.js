@@ -59,7 +59,7 @@ exports.packageList = async (req, res) => {
         }
         //get all package
         const packages = await Package.findAll() 
-        const {villageRelation} = packages
+        const villageRelation = packages.map(packageData => packageData.villageRelation)
         const {villageName} = await Village.findOne({where: {id: villageRelation}})
         //if there is no data
         if(packages.length < 1){
