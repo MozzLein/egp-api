@@ -45,6 +45,7 @@ exports.packageList = async (req, res) => {
         if(villageId){
             //get all package
             const packages = await Package.findAll({where: {villageRelation: villageId}})
+            const {villageName} = await Village.findOne({where: {id: villageId}})
             return res.status(200).send({
                 data: packages.map(packageData => ({
                     id: packageData.id,
@@ -52,11 +53,14 @@ exports.packageList = async (req, res) => {
                     packageDesc: packageData.description,
                     packagePicture: packageData.package_picture,
                     packagePrice: packageData.price,
+                    villageName
                 }))
             })
         }
         //get all package
-        const packages = await Package.findAll()  
+        const packages = await Package.findAll() 
+        const {villageRelation} = packages
+        const {villageName} = await Village.findOne({where: {id: villageRelation}})
         //if there is no data
         if(packages.length < 1){
             res.status(404).send({
@@ -73,7 +77,8 @@ exports.packageList = async (req, res) => {
                 packageDesc: packageData.description,
                 packagePicture: packageData.package_picture,
                 packagePrice: packageData.price,
-                duration: packageData.duration
+                duration: packageData.duration,
+                villageName
             }))
 })
     } catch (error) {

@@ -50,16 +50,22 @@ exports.activityList = async (req, res) => {
         if(villageId){
             //get all activity
             const activityList = await Activity.findAll({where: {villageRelation: villageId}})
+            const {villageName} = await Village.findOne({where: {id: villageId}})
             return res.status(200).send({
-                activityList
+                activityList,
+                villageRelation,
+                villageName
             })
         }
 
         //get all activity
         const activityList = await Activity.findAll()
+        const {villageRelation} = activityList
+        const {villageName} = await Village.findOne({where: {id: villageRelation}})
 
         res.status(200).send({
-            activityList
+            activityList,
+            villageName
         })
     } catch (error) {
         res.status(500).send({
