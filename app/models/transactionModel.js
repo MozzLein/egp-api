@@ -22,6 +22,14 @@ const Transaction = sequelize.define("transactions", {
             notEmpty: true
         }
     },
+    villageRelation: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'villages',
+            key: 'id'
+        }
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,

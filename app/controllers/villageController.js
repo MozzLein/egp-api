@@ -20,7 +20,7 @@ exports.villageRegister = async (req, res) => {
             // Input data to DB
             const newVillage = await Village.create({
                 id,
-                adminRelation: adminId,
+                adminRelation: adminId, 
                 villageName,
                 villageLatitude,
                 villageLongitude,

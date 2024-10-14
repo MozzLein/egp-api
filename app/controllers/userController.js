@@ -306,11 +306,17 @@ exports.clearQuest = async (req, res) => {
 exports.transaction = async (req, res) => {
     try {
         const transactionProof = req.file
+        const {villageId} = req.params
         const {totalPax, nik, itemId, name} = req.body
 
         // check if file uploaded
         if (!transactionProof) {
             return res.status(400).send({ message: 'No file uploaded' })
+        }
+
+        // check if village exist
+        if(!villageId){
+            return res.status(404).send({ message: 'Village not found' })
         }
 
         // Uploading file to storage
@@ -335,6 +341,7 @@ exports.transaction = async (req, res) => {
                 //upload to db
                 await Transaction.create({  
                     totalPax,
+                    villageRelation : villageId,
                     name,
                     nik, 
                     item : itemInfo.name,
@@ -351,6 +358,26 @@ exports.transaction = async (req, res) => {
                     error: error.message
                 })
             }
+        })
+    } catch (error) {
+        res.status(500).send({
+            error: error.message
+        })
+    }
+}
+
+exports.adminGetTransaction = async (req, res) => {
+    try {
+        const {villageId} = req.params
+
+        //check if village exist
+        if(!villageId){
+            return res.status(404).send({ message: 'Village not found' })
+        }
+
+        const transactionList = await Transaction.findAll({where: {villageRelation : villageId}})
+        res.status(200).send({
+            transactionList
         })
     } catch (error) {
         res.status(500).send({
