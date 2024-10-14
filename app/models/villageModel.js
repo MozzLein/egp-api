@@ -17,6 +17,27 @@ const Village = sequelize.define("villages", {
             notEmpty: true
         }
     },
+    adminAccountNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
+    adminBankName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
+    adminBankAccount: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     villageName: {
         type: DataTypes.STRING,
         allowNull: false,

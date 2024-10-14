@@ -3,7 +3,7 @@ const storage = require('../../config/storage.js')
 exports.uploadStorage = (file, res, next) => {
     // Create a new filename for the uploaded image
     const filename = `${Date.now()}_${file.originalname}`
-    const bucketName = 'photo-egp'
+    const bucketName = 'photos-egp'
 
     const bucket = storage.bucket(bucketName)
     // Upload the image to the GCS bucket

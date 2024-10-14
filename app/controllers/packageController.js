@@ -24,7 +24,7 @@ exports.addPackage = async (req, res) => {
                 name,
                 description,
                 villageRelation : villageId,
-                price : 'Rp. ' + price,
+                price : price,
                 duration
             })
             res.status(201).send({
@@ -167,7 +167,7 @@ exports.editPackage = async (req, res) => {
                 package_picture : imageUrl || 'default.jpg',
                 name,
                 description,
-                price : 'Rp. ' + price,
+                price : price,
                 duration
             })
             await Package.update(updatePackageInfo, {where: {id: packageId}})

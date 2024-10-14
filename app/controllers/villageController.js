@@ -5,7 +5,7 @@ const {uploadStorage} = require('../helper/uploadStorage.js')
 
 exports.villageRegister = async (req, res) => {
     try {
-        const { villageName, villageLatitude, villageLongitude, province, regency, district, socialMedia, contact} = req.body
+        const { villageName, villageLatitude, villageLongitude, province, regency, district, socialMedia, contact, adminAccountNumber, adminBankName, adminBankAccount} = req.body
         const picture = req.file
         const adminId = req.params.adminId
         const id = generateUUID()
@@ -29,7 +29,10 @@ exports.villageRegister = async (req, res) => {
                 district,
                 socialMedia,
                 contact,
-                picture: imageUrl || 'default.jpg'
+                picture: imageUrl || 'default.jpg',
+                adminAccountNumber,
+                adminBankName,
+                adminBankAccount
             })
 
             res.status(201).send({
@@ -105,7 +108,7 @@ exports.villageAdminList = async (req, res) => {
             include: [{
                 model: Activity,
                 as : 'activities',
-                attributes : ['id', 'activityName', 'activityDesc', 'activityCategory']
+                attributes : ['id', 'activityName', 'activityDesc']
             }]
         }, {
             where: {

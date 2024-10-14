@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {userRegister, userLogin, getUserProfile, editUserProfile, adminRegister, adminLogin, clearQuest} = require('../controllers/userController')
+const {userRegister, userLogin, getUserProfile, editUserProfile, adminRegister, adminLogin, clearQuest, transaction} = require('../controllers/userController')
 const {villageRegister, villageList, villageAdminList, villageEdit, villageDelete} = require('../controllers/villageController')
 const {addActivity, activityList, activityDetail, editActivity, deleteActivity} = require('../controllers/activityController')
 const {addPackage, packageList, packageDetail, packageAdminList, editPackage, deletePackage} = require('../controllers/packageController')
@@ -20,6 +20,7 @@ router.get('/homepage/quest/', questList)
 
 //router post
 router.post('/register', userRegister)
+router.post('/test', upload.single('image'), transaction)
 router.post('/login', userLogin)
 router.post('/quests/:questId/:id', upload.single('image'), clearQuest)
 

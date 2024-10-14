@@ -2,6 +2,9 @@ const bcrypt = require('bcrypt')
 const Users = require('../models/userModel.js')
 const Admin = require('../models/adminModel.js')
 const Quests = require('../models/questModel.js')
+const Transaction = require('../models/transactionModel.js')
+const Activity = require('../models/activityModel.js')
+const Package = require('../models/packageModel.js')
 const jwt = require('jsonwebtoken')
 const {generateUUID} = require('../helper/generateId.js')
 const {uploadStorage} = require('../helper/uploadStorage.js')
@@ -260,6 +263,7 @@ exports.clearQuest = async (req, res) => {
         const {questId, id} = req.params
         const {desc} = req.body
 
+        //check if file uploaded
         if (!file) {
             return res.status(400).send({ message: 'No file uploaded' })
         }
@@ -291,6 +295,63 @@ exports.clearQuest = async (req, res) => {
         })
         
 
+    } catch (error) {
+        res.status(500).send({
+            error: error.message
+        })
+    }
+}
+
+
+exports.transaction = async (req, res) => {
+    try {
+        const transactionProof = req.file
+        const {totalPax, nik, itemId, name} = req.body
+
+        // check if file uploaded
+        if (!transactionProof) {
+            return res.status(400).send({ message: 'No file uploaded' })
+        }
+
+        // Uploading file to storage
+        await uploadStorage(transactionProof, res, async (imageUrl) => {
+            try {
+                // get item information
+                const getItemInformation = async (itemId) => {
+                    const packageInformation = await Package.findOne({where: {id: itemId}})
+                    if (packageInformation) {
+                        return { name: packageInformation.name, price: parseInt(packageInformation.price) }
+                    }
+
+                    const activityInformation = await Activity.findOne({where: {id: itemId}})
+                    if (activityInformation) {
+                        return { name: activityInformation.activityName, price: parseInt(activityInformation.activityPrice) }
+                    }
+
+                    return null
+                }
+                const itemInfo = await getItemInformation(itemId)
+                
+                //upload to db
+                await Transaction.create({  
+                    totalPax,
+                    name,
+                    nik, 
+                    item : itemInfo.name,
+                    transferProof : imageUrl,
+                    totalPrice :itemInfo.price * totalPax,
+                    verification : "pending"
+                })
+
+                res.status(200).send({
+                    message: 'Upload transaction proof success',
+                })
+            } catch (error) {
+                res.status(500).send({
+                    error: error.message
+                })
+            }
+        })
     } catch (error) {
         res.status(500).send({
             error: error.message
