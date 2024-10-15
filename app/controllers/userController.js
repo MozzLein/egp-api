@@ -306,7 +306,7 @@ exports.clearQuest = async (req, res) => {
 exports.transaction = async (req, res) => {
     try {
         const transactionProof = req.file
-        const {villageId} = req.params
+        const {villageId, userId} = req.params
         const {totalPax, nik, itemId, name} = req.body
 
         // check if file uploaded
@@ -319,6 +319,11 @@ exports.transaction = async (req, res) => {
             return res.status(404).send({ message: 'Village not found' })
         }
 
+        // check if user exist
+        if(!userId){
+            return res.status(404).send({ message: 'User not found' })
+        }
+
         // Uploading file to storage
         await uploadStorage(transactionProof, res, async (imageUrl) => {
             try {
@@ -326,25 +331,32 @@ exports.transaction = async (req, res) => {
                 const getItemInformation = async (itemId) => {
                     const packageInformation = await Package.findOne({where: {id: itemId}})
                     if (packageInformation) {
-                        return { name: packageInformation.name, price: parseInt(packageInformation.price) }
+                        if(packageInformation.villageRelation !== villageId) { return null }
+                        return { itemName: packageInformation.name, price: parseInt(packageInformation.price) }
                     }
 
                     const activityInformation = await Activity.findOne({where: {id: itemId}})
                     if (activityInformation) {
-                        return { name: activityInformation.activityName, price: parseInt(activityInformation.activityPrice) }
+                        if(activityInformation.villageRelation !== villageId) { return null }
+                        return { itemName: activityInformation.activityName, price: parseInt(activityInformation.activityPrice) }
                     }
 
                     return null
                 }
                 const itemInfo = await getItemInformation(itemId)
                 
+                if(!itemInfo){
+                    return res.status(404).send({ message: 'Item not found' })
+                }
+
                 //upload to db
                 await Transaction.create({  
+                    userId,
                     totalPax,
                     villageRelation : villageId,
                     name,
                     nik, 
-                    item : itemInfo.name,
+                    item : itemInfo.itemName,
                     transferProof : imageUrl,
                     totalPrice :itemInfo.price * totalPax,
                     verification : "pending"
@@ -366,6 +378,32 @@ exports.transaction = async (req, res) => {
     }
 }
 
+exports.userGetTransactionHistory = async (req, res) => {
+    try {
+        const {userId, villageId} = req.params
+
+        //check if village exist
+        if(!villageId){
+            return res.status(404).send({ message: 'Village not found' })
+        }
+        //check if user exist
+        if(!userId){
+            return res.status(404).send({ message: 'User not found' })
+        }
+
+        const transactionList = await Transaction.findAll({where: {userId, villageRelation : villageId}})
+        if(transactionList.length === 0){
+            return res.status(404).send({ message: 'There is no history' })
+        }
+        res.status(200).send({
+            transactionList
+        })
+    } catch (error) {
+        res.status(500).send({
+            error: error.message
+        })
+    }
+}
 exports.adminGetTransaction = async (req, res) => {
     try {
         const {villageId} = req.params
@@ -378,6 +416,33 @@ exports.adminGetTransaction = async (req, res) => {
         const transactionList = await Transaction.findAll({where: {villageRelation : villageId}})
         res.status(200).send({
             transactionList
+        })
+    } catch (error) {
+        res.status(500).send({
+            error: error.message
+        })
+    }
+}
+
+exports.adminEditTransaction = async (req, res) => {
+    try {
+        const {transactionId} = req.params
+
+        //check if transaction exist
+        if(!transactionId){
+            return res.status(404).send({ message: 'Transaction not found' })
+        }
+
+        const {verification} = req.body
+
+        if(!verification){
+            return res.status(400).send({ message: 'Please input verification' })
+        }
+        
+        //update transaction
+        await Transaction.update({verification},{where: {id: transactionId}})
+        res.status(200).send({
+            message: `Transaction ${verification}`
         })
     } catch (error) {
         res.status(500).send({

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {userRegister, userLogin, getUserProfile, editUserProfile, adminRegister, adminLogin, clearQuest, transaction, adminGetTransaction} = require('../controllers/userController')
+const {userRegister, userLogin, getUserProfile, editUserProfile, adminRegister, adminLogin, clearQuest, transaction, adminGetTransaction, adminEditTransaction, userGetTransactionHistory} = require('../controllers/userController')
 const {villageRegister, villageList, villageAdminList, villageEdit, villageDelete} = require('../controllers/villageController')
 const {addActivity, activityList, activityDetail, editActivity, deleteActivity} = require('../controllers/activityController')
 const {addPackage, packageList, packageDetail, packageAdminList, editPackage, deletePackage} = require('../controllers/packageController')
@@ -17,10 +17,10 @@ router.get('/homepage/:villageId/package', packageList)
 router.get('/homepage/package', packageList)
 router.get('/homepage/package/:packageId', packageDetail)
 router.get('/homepage/quest/', questList)
-
+router.get('/homepage/village/:villageId/:userId/transaction/history', userGetTransactionHistory)
 //router post
 router.post('/register', userRegister)
-router.post('/homepage/:villageId/transaction', upload.single('image'), transaction)
+router.post('/homepage/:villageId/:userId/transaction', upload.single('image'), transaction)
 router.post('/login', userLogin)
 router.post('/quests/:questId/:id', upload.single('image'), clearQuest)
 
@@ -47,6 +47,8 @@ router.post('/admin/quest/:villageId', addQuest)
 router.put('/admin/:adminId/village/:villageId', upload.single('picture'), villageEdit)
 router.put('/admin/village/activity/:id', editActivity)
 router.put('/admin/village/package/:packageId', upload.single('package_picture'), editPackage)
+router.put('/admin/village/:villageId/transaction/:transactionId', adminEditTransaction)
+
 
 //router delete
 router.delete('/admin/village/:id', villageDelete)

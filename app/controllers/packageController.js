@@ -42,13 +42,16 @@ exports.addPackage = async (req, res) => {
 exports.packageList = async (req, res) => {
     try {
         const {villageId} = req.params
+
         if(villageId){
+
             //get all package
             const packages = await Package.findAll({where: {villageRelation: villageId}})
             const {villageName} = await Village.findOne({where: {id: villageId}})
             return res.status(200).send({
-                data: packages.map(packageData => ({
+                packageList: packages.map(packageData => ({
                     id: packageData.id,
+                    villageRelation: packageData.villageRelation,
                     packageName: packageData.name,
                     packageDesc: packageData.description,
                     packagePicture: packageData.package_picture,
@@ -57,6 +60,7 @@ exports.packageList = async (req, res) => {
                 }))
             })
         }
+
         //get all package
         const packages = await Package.findAll() 
         const villageRelation = packages.map(packageData => packageData.villageRelation)
@@ -71,8 +75,9 @@ exports.packageList = async (req, res) => {
         
         //send data
         res.status(200).send({
-            data: packages.map(packageData => ({
+            packageList: packages.map(packageData => ({
                 id: packageData.id,
+                villageRelation: packageData.villageRelation,
                 packageName: packageData.name,
                 packageDesc: packageData.description,
                 packagePicture: packageData.package_picture,

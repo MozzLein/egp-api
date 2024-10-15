@@ -8,6 +8,14 @@ const Transaction = sequelize.define("transactions", {
         allowNull: false,
         primaryKey: true,
     },
+    userId : {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'users',
+            key: 'id'
+        }
+    },
     totalPax: {
         type: DataTypes.INTEGER,
         allowNull: false,
