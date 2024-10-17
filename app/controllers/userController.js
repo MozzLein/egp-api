@@ -307,7 +307,7 @@ exports.transaction = async (req, res) => {
     try {
         const transactionProof = req.file
         const {villageId, userId} = req.params
-        const {totalPax, nik, itemId, name, bookingDate} = req.body
+        const {totalPax, nik, itemId, name, totalPrice, bookingDate} = req.body
 
         // check if file uploaded
         if (!transactionProof) {
@@ -332,13 +332,13 @@ exports.transaction = async (req, res) => {
                     const packageInformation = await Package.findOne({where: {id: itemId}})
                     if (packageInformation) {
                         if(packageInformation.villageRelation !== villageId) { return null }
-                        return { itemName: packageInformation.name, price: parseInt(packageInformation.price) }
+                        return { itemName: packageInformation.name}
                     }
 
                     const activityInformation = await Activity.findOne({where: {id: itemId}})
                     if (activityInformation) {
                         if(activityInformation.villageRelation !== villageId) { return null }
-                        return { itemName: activityInformation.activityName, price: parseInt(activityInformation.activityPrice) }
+                        return { itemName: activityInformation.activityName}
                     }
 
                     return null
@@ -358,7 +358,7 @@ exports.transaction = async (req, res) => {
                     nik, 
                     item : itemInfo.itemName,
                     transferProof : imageUrl,
-                    totalPrice :itemInfo.price * totalPax,
+                    totalPrice,
                     bookingDate,
                     verification : "pending"
                 })
