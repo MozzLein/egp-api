@@ -66,6 +66,13 @@ const Transaction = sequelize.define("transactions", {
             notEmpty: true
         }
     },
+    bookingDate: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     verification: {
         type: DataTypes.STRING,
         allowNull: false,

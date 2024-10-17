@@ -307,7 +307,7 @@ exports.transaction = async (req, res) => {
     try {
         const transactionProof = req.file
         const {villageId, userId} = req.params
-        const {totalPax, nik, itemId, name} = req.body
+        const {totalPax, nik, itemId, name, bookingDate} = req.body
 
         // check if file uploaded
         if (!transactionProof) {
@@ -359,6 +359,7 @@ exports.transaction = async (req, res) => {
                     item : itemInfo.itemName,
                     transferProof : imageUrl,
                     totalPrice :itemInfo.price * totalPax,
+                    bookingDate,
                     verification : "pending"
                 })
 
@@ -380,18 +381,15 @@ exports.transaction = async (req, res) => {
 
 exports.userGetTransactionHistory = async (req, res) => {
     try {
-        const {userId, villageId} = req.params
+        const {userId} = req.params
 
-        //check if village exist
-        if(!villageId){
-            return res.status(404).send({ message: 'Village not found' })
-        }
         //check if user exist
         if(!userId){
             return res.status(404).send({ message: 'User not found' })
         }
 
-        const transactionList = await Transaction.findAll({where: {userId, villageRelation : villageId}})
+        const transactionList = await Transaction.findAll({where: {userId}})
+
         if(transactionList.length === 0){
             return res.status(404).send({ message: 'There is no history' })
         }

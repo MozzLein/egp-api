@@ -17,7 +17,8 @@ router.get('/homepage/:villageId/package', packageList)
 router.get('/homepage/package', packageList)
 router.get('/homepage/package/:packageId', packageDetail)
 router.get('/homepage/quest/', questList)
-router.get('/homepage/village/:villageId/:userId/transaction/history', userGetTransactionHistory)
+router.get('/homepage/:userId/transaction/history', userGetTransactionHistory)
+
 //router post
 router.post('/register', userRegister)
 router.post('/homepage/:villageId/:userId/transaction', upload.single('image'), transaction)
