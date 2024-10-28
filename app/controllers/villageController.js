@@ -52,6 +52,7 @@ exports.villageRegister = async (req, res) => {
 exports.villageList = async (req, res) => {
     try {
         const {adminId} = req.params
+        
         if(adminId){
             //get village by admin
             const villages = await Village.findAll({
