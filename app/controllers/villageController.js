@@ -51,16 +51,39 @@ exports.villageRegister = async (req, res) => {
 
 exports.villageList = async (req, res) => {
     try {
+        const {adminId} = req.params
+        if(adminId){
+            //get village by admin
+            const villages = await Village.findAll({
+                where: {
+                    adminRelation: adminId
+                }
+            })
+            //if there is no data
+            if(villages.length < 1){
+                res.status(404).send({
+                    message: "There is no data"
+                })
+                return
+            }
+            const villageData = villages.map(village => ({
+                id: village.id,
+                villageName: village.villageName,
+                province: village.province,
+                regency: village.regency,
+                district: village.district,
+                socialMedia: village.socialMedia,
+                contact: village.contact,
+                picture: village.picture
+        }
+        ));
+            res.status(200).send({
+                villageData
+            })
+            return
+        }
         //get all village
-        const villages = await Village.findAll(
-        //     {
-        //     include: [{
-        //         model: Activity,
-        //         as : 'activities',
-        //         attributes : ['id', 'activityName', 'activityDesc', 'activityCategory']
-        //     }]
-        // }
-    )
+        const villages = await Village.findAll()
 
         //if there is no data
         if(villages.length < 1){
@@ -81,12 +104,6 @@ exports.villageList = async (req, res) => {
             picture: village.picture,
             villageLatitude : village.villageLatitude,
             villageLongitude : village.villageLongitude
-            // activities: village.activities.map(activity => ({
-            //     id: activity.id,
-            //     activityName: activity.activityName,
-            //     activityDesc: activity.activityDesc,
-            //     activityCategory: activity.activityCategory
-            // }))
         }));
 
         res.status(200).send({
